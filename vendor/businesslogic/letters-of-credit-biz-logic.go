@@ -17,16 +17,14 @@ type LetterOfCredit struct {
 }
 
 // Get - returns a JSON formatted letter of credit
-func (loc *LetterOfCredit) Get(ctx *contractapi.TransactionContext, letterID string, role string, participantID string) (string, error) {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	person, err := loc.getParticipantByRole(stub, role, participantID)
+func (loc *LetterOfCredit) Get(ctx *helpers.TransactionContext, letterID string, role string, participantID string) (string, error) {
+	person, err := loc.getParticipantByRole(ctx, role, participantID)
 
 	if err != nil {
 		return "", err
 	}
 
-	letter, err := stub.GetLetterOfCredit(letterID)
+	letter, err := ctx.GetLetterOfCredit(letterID)
 
 	if err != nil {
 		return "", err
@@ -42,7 +40,7 @@ func (loc *LetterOfCredit) Get(ctx *contractapi.TransactionContext, letterID str
 }
 
 // Apply - create a new letter of credit
-func (loc *LetterOfCredit) Apply(ctx *contractapi.TransactionContext, letterID string, applicantID string, beneficiaryID string, rulesJSON string, productDetailsJSON string) error {
+func (loc *LetterOfCredit) Apply(ctx *helpers.TransactionContext, letterID string, applicantID string, beneficiaryID string, rulesJSON string, productDetailsJSON string) error {
 	rules, err := loc.parseRules(rulesJSON)
 
 	if err != nil {
@@ -56,16 +54,14 @@ func (loc *LetterOfCredit) Apply(ctx *contractapi.TransactionContext, letterID s
 		return fmt.Errorf("Could not convert passed JSON %s into productDetails object", productDetailsJSON)
 	}
 
-	stub := helpers.NewStub(ctx.GetStub())
-
 	// Errors caught in the gets will prevent create from running so don't need to catch
-	applicant, err := stub.GetCustomer(applicantID)
+	applicant, err := ctx.GetCustomer(applicantID)
 
 	if err != nil {
 		return err
 	}
 
-	beneficiary, err := stub.GetCustomer(beneficiaryID)
+	beneficiary, err := ctx.GetCustomer(beneficiaryID)
 
 	if err != nil {
 		return err
@@ -76,22 +72,20 @@ func (loc *LetterOfCredit) Apply(ctx *contractapi.TransactionContext, letterID s
 
 	letter := defs.NewLetterOfCredit(letterID, *applicant, *beneficiary, issuingBank, exportingBank, rules, productDetails)
 
-	stub.CreateLetterOfCredit(letter)
+	ctx.CreateLetterOfCredit(letter)
 
 	return err
 }
 
 // Approve - add approval to letter of credit
-func (loc *LetterOfCredit) Approve(ctx *contractapi.TransactionContext, letterID string, role string, participantID string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	letter, err := loc.getEditableLetterOfCredit(stub, letterID)
+func (loc *LetterOfCredit) Approve(ctx *helpers.TransactionContext, letterID string, role string, participantID string) error {
+	letter, err := loc.getEditableLetterOfCredit(ctx, letterID)
 
 	if err != nil {
 		return err
 	}
 
-	person, err := loc.getParticipantByRole(stub, role, participantID)
+	person, err := loc.getParticipantByRole(ctx, role, participantID)
 
 	if !letter.IsSpecificParty(person, role) {
 		return fmt.Errorf("Participant passed is not a valid %s", role)
@@ -103,20 +97,18 @@ func (loc *LetterOfCredit) Approve(ctx *contractapi.TransactionContext, letterID
 		letter.SetStatus(defs.Approved)
 	}
 
-	return stub.PutLetterOfCredit(letter)
+	return ctx.PutLetterOfCredit(letter)
 }
 
 // Reject - if the letter is not already approved reject it
-func (loc *LetterOfCredit) Reject(ctx *contractapi.TransactionContext, letterID string, role string, participantID string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	letter, err := loc.getEditableLetterOfCredit(stub, letterID)
+func (loc *LetterOfCredit) Reject(ctx *helpers.TransactionContext, letterID string, role string, participantID string) error {
+	letter, err := loc.getEditableLetterOfCredit(ctx, letterID)
 
 	if err != nil {
 		return err
 	}
 
-	person, err := loc.getParticipantByRole(stub, role, participantID)
+	person, err := loc.getParticipantByRole(ctx, role, participantID)
 
 	if err != nil {
 		return err
@@ -129,14 +121,12 @@ func (loc *LetterOfCredit) Reject(ctx *contractapi.TransactionContext, letterID 
 	letter.ClearApproval()
 	letter.SetStatus(defs.Rejected)
 
-	return stub.PutLetterOfCredit(letter)
+	return ctx.PutLetterOfCredit(letter)
 }
 
 // SuggestRuleChange - Make changes to the rules
-func (loc *LetterOfCredit) SuggestRuleChange(ctx *contractapi.TransactionContext, letterID string, rulesJSON string, role string, participantID string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	letter, err := loc.getEditableLetterOfCredit(stub, letterID)
+func (loc *LetterOfCredit) SuggestRuleChange(ctx *helpers.TransactionContext, letterID string, rulesJSON string, role string, participantID string) error {
+	letter, err := loc.getEditableLetterOfCredit(ctx, letterID)
 
 	if err != nil {
 		return err
@@ -144,7 +134,7 @@ func (loc *LetterOfCredit) SuggestRuleChange(ctx *contractapi.TransactionContext
 
 	rules, err := loc.parseRules(rulesJSON)
 
-	person, err := loc.getParticipantByRole(stub, role, participantID)
+	person, err := loc.getParticipantByRole(ctx, role, participantID)
 
 	if !letter.IsParty(person) {
 		return fmt.Errorf("Participant passed is not a party in the letter of credit")
@@ -154,13 +144,11 @@ func (loc *LetterOfCredit) SuggestRuleChange(ctx *contractapi.TransactionContext
 	letter.ClearApproval()
 	letter.AddApproval(role)
 
-	return stub.PutLetterOfCredit(letter)
+	return ctx.PutLetterOfCredit(letter)
 }
 
 // MarkAsShipped - Update the letter of credit with shipping information
-func (loc *LetterOfCredit) MarkAsShipped(ctx *contractapi.TransactionContext, letterID string, participantID string, evidenceJSON string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
+func (loc *LetterOfCredit) MarkAsShipped(ctx *helpers.TransactionContext, letterID string, participantID string, evidenceJSON string) error {
 	evidence := defs.Evidence{}
 	err := json.Unmarshal([]byte(evidenceJSON), &evidence)
 
@@ -168,13 +156,13 @@ func (loc *LetterOfCredit) MarkAsShipped(ctx *contractapi.TransactionContext, le
 		return fmt.Errorf("Could not convert passed JSON %s into evidence", evidenceJSON)
 	}
 
-	letter, err := stub.GetLetterOfCredit(letterID)
+	letter, err := ctx.GetLetterOfCredit(letterID)
 
 	if err != nil {
 		return err
 	}
 
-	customer, err := stub.GetCustomer(participantID)
+	customer, err := ctx.GetCustomer(participantID)
 
 	if err != nil {
 		return err
@@ -191,20 +179,18 @@ func (loc *LetterOfCredit) MarkAsShipped(ctx *contractapi.TransactionContext, le
 	letter.SetStatus(defs.Shipped)
 	letter.AddEvidence(evidence)
 
-	return stub.PutLetterOfCredit(letter)
+	return ctx.PutLetterOfCredit(letter)
 }
 
 // MarkAsReceived - Update the letter of credit with acceptance of product
-func (loc *LetterOfCredit) MarkAsReceived(ctx *contractapi.TransactionContext, letterID string, participantID string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	letter, err := stub.GetLetterOfCredit(letterID)
+func (loc *LetterOfCredit) MarkAsReceived(ctx *helpers.TransactionContext, letterID string, participantID string) error {
+	letter, err := ctx.GetLetterOfCredit(letterID)
 
 	if err != nil {
 		return err
 	}
 
-	customer, err := stub.GetCustomer(participantID)
+	customer, err := ctx.GetCustomer(participantID)
 
 	if err != nil {
 		return err
@@ -220,20 +206,18 @@ func (loc *LetterOfCredit) MarkAsReceived(ctx *contractapi.TransactionContext, l
 
 	letter.SetStatus(defs.Received)
 
-	return stub.PutLetterOfCredit(letter)
+	return ctx.PutLetterOfCredit(letter)
 }
 
 // MarkAsReadyForPayment - Update the letter of credit to show issuingBank is happy to pass payment
-func (loc *LetterOfCredit) MarkAsReadyForPayment(ctx *contractapi.TransactionContext, letterID string, participantID string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	letter, err := stub.GetLetterOfCredit(letterID)
+func (loc *LetterOfCredit) MarkAsReadyForPayment(ctx *helpers.TransactionContext, letterID string, participantID string) error {
+	letter, err := ctx.GetLetterOfCredit(letterID)
 
 	if err != nil {
 		return err
 	}
 
-	banker, err := stub.GetBankEmployee(participantID)
+	banker, err := ctx.GetBankEmployee(participantID)
 
 	if err != nil {
 		return err
@@ -249,20 +233,18 @@ func (loc *LetterOfCredit) MarkAsReadyForPayment(ctx *contractapi.TransactionCon
 
 	letter.SetStatus(defs.ReadyForPayment)
 
-	return stub.PutLetterOfCredit(letter)
+	return ctx.PutLetterOfCredit(letter)
 }
 
 // Close - Close the letter of credit
-func (loc *LetterOfCredit) Close(ctx *contractapi.TransactionContext, letterID string, participantID string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	letter, err := stub.GetLetterOfCredit(letterID)
+func (loc *LetterOfCredit) Close(ctx *helpers.TransactionContext, letterID string, participantID string) error {
+	letter, err := ctx.GetLetterOfCredit(letterID)
 
 	if err != nil {
 		return err
 	}
 
-	banker, err := stub.GetBankEmployee(participantID)
+	banker, err := ctx.GetBankEmployee(participantID)
 
 	if err != nil {
 		return err
@@ -278,7 +260,7 @@ func (loc *LetterOfCredit) Close(ctx *contractapi.TransactionContext, letterID s
 
 	letter.SetStatus(defs.Closed)
 
-	return stub.PutLetterOfCredit(letter)
+	return ctx.PutLetterOfCredit(letter)
 }
 
 // ========== USEFUL NON EXPORTED HELPERS ==========
@@ -294,8 +276,8 @@ func (loc *LetterOfCredit) parseRules(rulesJSON string) ([]defs.Rule, error) {
 	return rules, nil
 }
 
-func (loc *LetterOfCredit) getEditableLetterOfCredit(stub *helpers.Stub, letterID string) (*defs.LetterOfCredit, error) {
-	letter, err := stub.GetLetterOfCredit(letterID)
+func (loc *LetterOfCredit) getEditableLetterOfCredit(ctx *helpers.TransactionContext, letterID string) (*defs.LetterOfCredit, error) {
+	letter, err := ctx.GetLetterOfCredit(letterID)
 
 	if err != nil {
 		return nil, err
@@ -310,17 +292,17 @@ func (loc *LetterOfCredit) getEditableLetterOfCredit(stub *helpers.Stub, letterI
 	return letter, nil
 }
 
-func (loc *LetterOfCredit) getParticipantByRole(stub *helpers.Stub, role string, participantID string) (interface{}, error) {
+func (loc *LetterOfCredit) getParticipantByRole(ctx *helpers.TransactionContext, role string, participantID string) (interface{}, error) {
 	switch strings.ToLower(role) {
 	case "applicant":
 		fallthrough
 	case "beneficiary":
-		participant, err := stub.GetCustomer(participantID)
+		participant, err := ctx.GetCustomer(participantID)
 		return *participant, err
 	case "issuingbank":
 		fallthrough
 	case "exportingbank":
-		participant, err := stub.GetBankEmployee(participantID)
+		participant, err := ctx.GetBankEmployee(participantID)
 		return *participant, err
 	default:
 		return nil, fmt.Errorf("%s not a valid approval field", role)

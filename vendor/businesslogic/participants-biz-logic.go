@@ -13,10 +13,8 @@ type Participants struct {
 }
 
 // CreateCustomer - Create a new customer in the world state
-func (pc *Participants) CreateCustomer(ctx *contractapi.TransactionContext, id string, forename string, surname string, bankID string, companyName string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	bank, err := stub.GetBank(bankID)
+func (pc *Participants) CreateCustomer(ctx *helpers.TransactionContext, id string, forename string, surname string, bankID string, companyName string) error {
+	bank, err := ctx.GetBank(bankID)
 
 	if err != nil {
 		return err
@@ -29,14 +27,12 @@ func (pc *Participants) CreateCustomer(ctx *contractapi.TransactionContext, id s
 	customer.Bank = *bank
 	customer.CompanyName = companyName
 
-	return stub.CreateCustomer(customer)
+	return ctx.CreateCustomer(customer)
 }
 
 // CreateBankEmployee - Create a new bank employee in the world state
-func (pc *Participants) CreateBankEmployee(ctx *contractapi.TransactionContext, id string, forename string, surname string, bankID string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
-	bank, err := stub.GetBank(bankID)
+func (pc *Participants) CreateBankEmployee(ctx *helpers.TransactionContext, id string, forename string, surname string, bankID string) error {
+	bank, err := ctx.GetBank(bankID)
 
 	if err != nil {
 		return err
@@ -48,16 +44,14 @@ func (pc *Participants) CreateBankEmployee(ctx *contractapi.TransactionContext, 
 	banker.Surname = surname
 	banker.Bank = *bank
 
-	return stub.CreateBankEmployee(banker)
+	return ctx.CreateBankEmployee(banker)
 }
 
 // CreateBank - Create a new bank in the world state
-func (pc *Participants) CreateBank(ctx *contractapi.TransactionContext, id string, name string) error {
-	stub := helpers.NewStub(ctx.GetStub())
-
+func (pc *Participants) CreateBank(ctx *helpers.TransactionContext, id string, name string) error {
 	bank := new(defs.Bank)
 	bank.ID = id
 	bank.Name = name
 
-	return stub.CreateBank(bank)
+	return ctx.CreateBank(bank)
 }
