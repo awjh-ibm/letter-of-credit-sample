@@ -40,7 +40,7 @@ export class State {
         return Buffer.from(JSON.stringify(object));
     }
 
-    public static async deserialize(data: Buffer, supportedClasses: Map<string, any>): Promise<object> {
+    public static deserialize(data: Buffer, supportedClasses: Map<string, any>): object {
         let json = JSON.parse(data.toString());
         let objClass = supportedClasses.get(json.class);
         if (!objClass) {
@@ -50,7 +50,7 @@ export class State {
         return this.callConstructor(objClass, json);
     }
 
-    public static async deserializeClass(data: string, objClass: any): Promise<object> {
+    public static deserializeClass(data: string, objClass: any): object {
         let json = JSON.parse(data);
         return this.callConstructor(objClass, json);
     }

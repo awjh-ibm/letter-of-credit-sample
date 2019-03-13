@@ -1,5 +1,6 @@
 node dist/index.js enroll --fabric-config-path ../../contract/local_fabric 
 
+NO LONGER WORKING BELOW AS REMOVED SUBMIT TXN
 node dist/index.js submit --function-name registerBank --function-args '["Bank of Dinero"]' --user mathias --fabric-config-path ../../contract/local_fabric
 
 node dist/index.js submit --function-name registerParticipant --function-args '[]' --user alice --fabric-config-path ../../contract/local_fabric

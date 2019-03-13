@@ -1,0 +1,57 @@
+[
+    {
+        "name": "system",
+        "attrs": [
+            {
+                "name": "locnet.role",
+                "value": "system",
+                "ecert": true
+            }
+        ]
+    },
+    {
+        "name": "alice",
+        "attrs": [
+            {
+                "name": "locnet.role",
+                "value": "customer",
+                "ecert": true
+            },
+            {
+                "name": "forename",
+                "value": "alice",
+                "ecert": true
+            },
+            {
+                "name": "surname",
+                "value": "hamilton",
+                "ecert": true
+            },
+            {
+                "name": "company",
+                "value": "QuickFix IT",
+                "ecert": true
+            }
+        ]
+    },
+    {
+        "name": "mathias",
+        "attrs": [
+            {
+                "name": "locnet.role",
+                "value": "bankemployee",
+                "ecert": true
+            },
+            {
+                "name": "forename",
+                "value": "mathias",
+                "ecert": true
+            },
+            {
+                "name": "surname",
+                "value": "gonzalez",
+                "ecert": true
+            }
+        ]
+    }
+]

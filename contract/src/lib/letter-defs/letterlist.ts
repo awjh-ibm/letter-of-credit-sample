@@ -27,17 +27,33 @@ export class LetterList extends StateList {
     }
 
     async addLetter(letter: LetterOfCredit) {
-        return this.addState(LetterOfCreditConverter.toLetterOfCreditState(letter));
+        try {
+            return this.addState(LetterOfCreditConverter.toLetterOfCreditState(letter));
+        } catch (err) {
+            throw new Error('Failed to add letter. ERROR: ' + err.message);
+        }
     }
 
     async getLetter(letterKey: string): Promise<LetterOfCredit> {
-        const rawLetter = await this.getState(letterKey) as LetterOfCreditState;
+        let rawLetter;
+
+        try {
+            rawLetter = await this.getState(letterKey) as LetterOfCreditState;
+        } catch (err) {
+            throw new Error('Failed to get letter state. ERROR: ' + err.message);
+        }
 
         return LetterOfCreditConverter.fromLetterOfCreditState(rawLetter, this.getCtx() as LetterOfCreditContext);
     }
 
     async getAllLetters(): Promise<Map<string, LetterOfCredit>> {
-        const rawLetters = await this.getAllStates() as Map<string, LetterOfCreditState>;
+        let rawLetters;
+
+        try {
+            rawLetters = await this.getAllStates() as Map<string, LetterOfCreditState>;
+        } catch (err) {
+            throw new Error('Failed to get all letters for user. ERROR: ' + err.message);
+        }
 
         const lettersMap: Map<string, LetterOfCredit> = new Map();
 
@@ -49,6 +65,10 @@ export class LetterList extends StateList {
     }
 
     async updateLetter(letter: LetterOfCredit) {
-        return this.updateState(LetterOfCreditConverter.toLetterOfCreditState(letter));
+        try {
+            return this.updateState(LetterOfCreditConverter.toLetterOfCreditState(letter));
+        } catch (err) {
+            throw new Error('Failed to update letter. ERROR: ' + err.message);
+        }
     }
 }

@@ -1,0 +1,75 @@
+{
+    "name": "letters-of-credit-network",
+    "x-type": "hlfv1",
+    "description": "The Letters of Credit network",
+    "version": "1.0",
+    "client": {
+        "organization": "{{LOC_ORG_ID}}",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "channels": {
+        "locnet": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.bank-of-dinero.com": {},
+                "peer0.eastwood-banking.com": {}
+            }
+        }
+    },
+    "organizations": {
+        "BankOfDinero": {
+            "mspid": "BankOfDineroMSP",
+            "peers": [
+                "peer0.bank-of-dinero.com"
+            ],
+            "certificateAuthorities": [
+                "ca0.example.com"
+            ]
+        },
+        "EastwoodBanking": {
+            "mspid": "EastwoodBankingMSP",
+            "peers": [
+                "peer0.eastwood-banking.com"
+            ],
+            "certificateAuthorities": [
+                "ca1.example.com"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpc://localhost:7050"
+        }
+    },
+    "peers": {
+        "peer0.bank-of-dinero.com": {
+            "url": "grpc://localhost:7051",
+            "eventUrl": "grpc://localhost:7053"
+        },
+        "peer0.eastwood-banking.com": {
+            "url": "grpc://localhost:8051",
+            "eventUrl": "grpc://localhost:8053"
+        }
+    },
+    "certificateAuthorities": {
+        "ca0.example.com": {
+            "url": "http://localhost:7054",
+            "caName": "ca-bankofdinero"
+        },
+        "ca1.example.com": {
+            "url": "http://localhost:8054",
+            "caName": "ca-eastwoodbanking"
+        }
+    }
+}

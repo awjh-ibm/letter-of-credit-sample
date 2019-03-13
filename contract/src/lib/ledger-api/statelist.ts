@@ -58,8 +58,10 @@ export class StateList {
 
         while (true) {
             const { value, done } = await data.next();
+
             const state = State.deserialize(value.getValue().toBuffer(), this.supportedClasses);
-            states.set(splitCompositeKey(value.getKey()), state)
+
+            states.set(splitCompositeKey(value.getKey()).attributes[0], state)
 
             if (done) {
                 break;

@@ -1,0 +1,389 @@
+{
+    "info": {
+        "version": "0.0.1",
+        "title": "Letter of credit contract"
+    },
+    "contracts": {
+        "org.locnet.letterofcredit": {
+            "name": "org.locnet.letterofcredit",
+            "contractInstance": {
+                "name": "org.locnet.letterofcredit",
+                "default": true
+            },
+            "transactions": [
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "bankName",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "name": "registerBank"
+                },
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [],
+                    "name": "registerParticipant"
+                },
+                {
+                    "returns": {
+                        "$ref": "#/components/schemas/LetterOfCredit"
+                    },
+                    "name": "get",
+                    "tag": [],
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "returns": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LetterOfCredit"
+                        }
+                    },
+                    "name": "getAll",
+                    "tag": [],
+                    "parameters": []
+                },
+                {
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "beneficiaryId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "rules",
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/IRule"
+                                }
+                            }
+                        },
+                        {
+                            "name": "productDetails",
+                            "schema": {
+                                "$ref": "#/components/schemas/IProductDetails"
+                            }
+                        }
+                    ],
+                    "name": "apply",
+                    "tag": [
+                        "submitTx"
+                    ]
+                },
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "name": "approve"
+                },
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "name": "reject"
+                },
+                {
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "rules",
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/IRule"
+                                }
+                            }
+                        }
+                    ],
+                    "name": "suggestRuleChange",
+                    "tag": [
+                        "submitTx"
+                    ]
+                },
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "evidence",
+                            "schema": {
+                                "$ref": "#/components/schemas/IEvidence"
+                            }
+                        }
+                    ],
+                    "name": "markAsShipped"
+                },
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "description": "",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "name": "markAsReceived"
+                },
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "description": "",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "name": "markAsReadyForPayment"
+                },
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "letterId",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "name": "close"
+                }
+            ],
+            "info": {
+                "title": "LetterOfCredit contract",
+                "version": "0.0.1"
+            }
+        },
+        "org.hyperledger.fabric": {
+            "name": "org.hyperledger.fabric",
+            "contractInstance": {
+                "name": "org.hyperledger.fabric"
+            },
+            "transactions": [
+                {
+                    "name": "GetMetadata"
+                }
+            ],
+            "info": {
+                "title": "System contract",
+                "version": "0.0.1"
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Bank": {
+                "$id": "Bank",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Customer": {
+                "$id": "Customer",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "forename": {
+                        "type": "string"
+                    },
+                    "surname": {
+                        "type": "string"
+                    },
+                    "company": {
+                        "type": "string"
+                    },
+                    "bank": {
+                        "$ref": "Bank"
+                    }
+                }
+            },
+            "BankEmployee": {
+                "$id": "BankEmployee",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "forename": {
+                        "type": "string"
+                    },
+                    "surname": {
+                        "type": "string"
+                    },
+                    "bank": {
+                        "$ref": "Bank"
+                    }
+                }
+            },
+            "IRule": {
+                "$id": "IRule",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "wording": {
+                        "type": "string"
+                    }
+                }
+            },
+            "IProductDetails": {
+                "$id": "IProductDetails",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "productType": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "unitPrice": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "IApproval": {
+                "$id": "IApproval",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "applicant": {
+                        "type": "boolean"
+                    },
+                    "beneficiary": {
+                        "type": "boolean"
+                    },
+                    "issuingBank": {
+                        "type": "boolean"
+                    },
+                    "exportingBank": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "IEvidence": {
+                "$id": "IEvidence",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "hash": "string"
+                    }
+                }
+            },
+            "LetterOfCredit": {
+                "$id": "LetterOfCredit",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "rules": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "IRule"
+                        }
+                    },
+                    "productDetails": {
+                        "$ref": "IProductDetails"
+                    },
+                    "evidence": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "IEvidence"
+                        }
+                    },
+                    "approval": {
+                        "$ref": "IApproval"
+                    },
+                    "status": {
+                        "type": "number"
+                    },
+                    "applicant": {
+                        "$ref": "Customer"
+                    },
+                    "beneficiary": {
+                        "$ref": "Customer"
+                    }
+                }
+            }
+        }
+    }
+}

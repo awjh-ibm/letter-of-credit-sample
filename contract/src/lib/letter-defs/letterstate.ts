@@ -40,10 +40,12 @@ export enum Status {
 export class LetterOfCreditState extends State {
 
     private id: string;
+
     protected applicantId: string;
     protected beneficiaryId: string;
     protected issuingBankId: string;
     protected exportingBankId: string;
+
     protected rules: Array<IRule>;
     protected productDetails: IProductDetails;
     protected evidence: Array<IEvidence>;

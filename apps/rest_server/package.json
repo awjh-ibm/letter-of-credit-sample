@@ -1,0 +1,25 @@
+{
+  "name": "loc_rest_server",
+  "version": "1.0.0",
+  "description": "a rest server for locnet",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "bin": {
+    "loc-rest-server": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc --skipLibCheck",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "awjh",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/express": "^4.16.1",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "fabric-client": "^1.4.0",
+    "swagger-ui-express": "^4.0.2",
+    "yargs": "^13.2.2"
+  }
+}

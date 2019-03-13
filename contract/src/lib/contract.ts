@@ -54,23 +54,25 @@ export class LetterOfCreditContract extends Contract {
         return letter;
     }
 
-    public async getAll(ctx: LetterOfCreditContext): Promise<Map<string, LetterOfCredit>> {
+    public async getAll(ctx: LetterOfCreditContext): Promise<Array<LetterOfCredit>> {
         const person: Person = await ctx.getClientIdentity().toPerson();
 
         const letterList: LetterList = ctx.getLetterList();
 
         const letters: Map<string, LetterOfCredit> = await letterList.getAllLetters();
 
+        const lettersArr: Array<LetterOfCredit> = [];
+
         letters.forEach((letter, letterId) => {
             if (letter.isParty(person)) {
-                letters.delete(letterId);
+                lettersArr.push(letter);
             }
         });
 
-        return letters;
+        return lettersArr;
     }
 
-    public async apply(ctx: LetterOfCreditContext, letterId: string, beneficiaryId: string, rules: Array<IRule>, productDetails: IProductDetails): Promise<void> {
+    public async apply(ctx: LetterOfCreditContext, letterId: string, beneficiaryId: string, rules: Array<IRule>, productDetails: IProductDetails) {
         const applicant: Customer = await ctx.getClientIdentity().toCustomer();
         const beneficiary: Customer = await ctx.getParticipantList().getCustomer(beneficiaryId);
 

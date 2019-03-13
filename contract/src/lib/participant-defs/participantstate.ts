@@ -38,6 +38,7 @@ export class PersonState extends State {
     private id: string;
     private forename: string;
     private surname: string;
+
     protected bankId: string;
 
     constructor (id: string, forename: string, surname: string, bankId: string, personClass: string) {

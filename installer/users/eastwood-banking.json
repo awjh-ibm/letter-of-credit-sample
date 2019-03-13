@@ -1,0 +1,56 @@
+[
+    {
+        "name": "system",
+        "attrs": [
+            {
+                "name": "locnet.role",
+                "value": "system",
+                "ecert": true
+            }
+        ]
+    }, {
+        "name": "bob",
+        "attrs": [
+            {
+                "name": "locnet.role",
+                "value": "customer",
+                "ecert": true
+            },
+            {
+                "name": "forename",
+                "value": "bob",
+                "ecert": true
+            },
+            {
+                "name": "surname",
+                "value": "appleton",
+                "ecert": true
+            },
+            {
+                "name": "company",
+                "value": "Conga Computers",
+                "ecert": true
+            }
+        ]
+    },
+    {
+        "name": "ella",
+        "attrs": [
+            {
+                "name": "locnet.role",
+                "value": "bankemployee",
+                "ecert": true
+            },
+            {
+                "name": "forename",
+                "value": "ella",
+                "ecert": true
+            },
+            {
+                "name": "surname",
+                "value": "deschamps",
+                "ecert": true
+            }
+        ]
+    }
+]

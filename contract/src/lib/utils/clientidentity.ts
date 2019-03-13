@@ -10,6 +10,7 @@ export type Role = 'customer' | 'bankemployee';
 
 export const CUSTOMER = 'customer';
 export const BANK_EMPLOYEE = 'bankemployee';
+export const SYSTEM = 'system';
 const ROLE_FIELD = 'locnet.role';
 const USERNAME_FIELD = 'locnet.username';
 
@@ -89,22 +90,22 @@ export class LetterOfCreditClientIdentity extends ClientIdentity {
     }
 
     public async newBankFromCaller(name: string): Promise<Bank> {
-        if (this.getAttributeValue(ROLE_FIELD) !== BANK_EMPLOYEE) {
+        if (this.getAttributeValue(ROLE_FIELD) !== SYSTEM) {
             throw new Error('Failed to create Bank. Invalid client identity with role ' + this.getAttributeValue(ROLE_FIELD));
         }
 
-        return new Bank(this.getMSPID(), name);
+        return new Bank(this.getMSPID().replace('MSP', ''), name);
     }
 
     public async getBankForCaller(): Promise<Bank> {
-        const mspID = this.getMSPID()
+        const bankID = this.getMSPID().replace('MSP', '')
         
         let bank: Bank;
 
         try {
-            bank = await this.ctx.getParticipantList().getBank(mspID); // will error if bank doesn't exist
+            bank = await this.ctx.getParticipantList().getBank(bankID); // will error if bank doesn't exist
         } catch (err) {
-            throw new Error('Failed to get Bank for client identity. No Bank has been registered with ID ' + mspID);
+            throw new Error('Failed to get Bank for client identity. No Bank has been registered with ID ' + bankID);
         }
 
         return bank;

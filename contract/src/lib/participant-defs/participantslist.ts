@@ -46,31 +46,61 @@ export class ParticipantList extends StateList {
     }
 
     async addBank(bank: Bank) {
-        return this.addState(ParticipantConverter.toBankState(bank));
+        try {
+            return this.addState(ParticipantConverter.toBankState(bank));
+        } catch (err) {
+            throw new Error('Failed to add bank. ERROR: ' + err.message);
+        }
     }
 
     async getBank(bankId: string): Promise<Bank> {
-        const rawBank = await this.getState(bankId) as BankState;
+        let rawBank;
+
+        try {
+            rawBank = await this.getState(bankId) as BankState;
+        } catch (err) {
+            throw new Error('Failed to get bank. ERROR: ' + err.message);
+        }
 
         return ParticipantConverter.fromBankState(rawBank, this.getCtx() as LetterOfCreditContext);
     }
 
     async addBankEmployee(bankEmployee: BankEmployee) {
-        return this.addState(ParticipantConverter.toBankEmployeeState(bankEmployee));
+        try {
+            return this.addState(ParticipantConverter.toBankEmployeeState(bankEmployee));
+        } catch (err) {
+            throw new Error('Failed to add bank employee. ERROR: ' + err.message);
+        }
     }
 
     async getBankEmployee(bankEmployeeId: string): Promise<BankEmployee> {
-        const rawBankEmployee = await this.getState(bankEmployeeId) as BankEmployeeState;
+        let rawBankEmployee;
+
+        try {
+            rawBankEmployee = await this.getState(bankEmployeeId) as BankEmployeeState;
+        } catch (err) {
+            throw new Error('Failed to get bank employee. ERROR: ' + err.message);
+        }
 
         return ParticipantConverter.fromBankEmployeeState(rawBankEmployee, this.getCtx() as LetterOfCreditContext);
     }
 
     async addCustomer(customer: Customer) {
-        return this.addState(ParticipantConverter.toCustomerState(customer));
+        try {
+            return this.addState(ParticipantConverter.toCustomerState(customer));
+        } catch (err) {
+            throw new Error('Failed to add customer. ERROR: ' + err.message);
+        }
     }
 
     async getCustomer(customerId: string): Promise<Customer> {
-        const rawCustomer = await this.getState(customerId) as CustomerState;
+        let rawCustomer;
+
+        try {
+            rawCustomer = await this.getState(customerId) as CustomerState;
+        } catch (err) {
+            throw new Error('Failed to get customer. ERROR: ' + err.message);
+        }
 
         return ParticipantConverter.fromCustomerState(rawCustomer, this.getCtx() as LetterOfCreditContext);
     }
