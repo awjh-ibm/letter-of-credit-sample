@@ -2,6 +2,7 @@ node_modules
 dist
 locnet_fabric
 tmp
+.DS_STORE
 
 installer/network/crypto-material/*.block
 installer/network/crypto-material/*.tx
