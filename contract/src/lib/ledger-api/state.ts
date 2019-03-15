@@ -66,7 +66,15 @@ export class State {
 
         if (!paramNames.every((name) => {
             if (json.hasOwnProperty(name)) {
-                args.push(json[name]);
+                let arg = json[name]
+
+                try {
+                    arg = JSON.parse(arg);
+                } catch (err) {
+                    // wasn't JSON oh well
+                }
+
+                args.push(arg);
                 return true;
             }
 

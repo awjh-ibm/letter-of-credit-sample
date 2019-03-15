@@ -6,13 +6,13 @@ import {  Context } from 'fabric-contract-api';
 
 import { LetterList } from '../letter-defs/letterlist';
 import { ParticipantList } from '../participant-defs/participantslist';
-import { LetterOfCreditClientIdentity } from './clientidentity';
+import { LOCNetClientIdentity } from './clientidentity';
 
-export class LetterOfCreditContext extends Context {
+export class LOCNetContext extends Context {
 
     private letterList: LetterList;
     private participantList: ParticipantList;
-    private locClientIdentity: LetterOfCreditClientIdentity;
+    private locClientIdentity: LOCNetClientIdentity;
 
     constructor() {
         super();
@@ -22,9 +22,9 @@ export class LetterOfCreditContext extends Context {
         this.participantList = new ParticipantList(this);
     }
 
-    public getClientIdentity(): LetterOfCreditClientIdentity {
+    public getClientIdentity(): LOCNetClientIdentity {
         if (!this.locClientIdentity) {
-            this.locClientIdentity = new LetterOfCreditClientIdentity(this);
+            this.locClientIdentity = new LOCNetClientIdentity(this);
         }
         return this.locClientIdentity;
     }

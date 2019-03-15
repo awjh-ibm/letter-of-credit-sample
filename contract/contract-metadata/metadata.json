@@ -4,11 +4,11 @@
         "title": "Letter of credit contract"
     },
     "contracts": {
-        "org.locnet.letterofcredit": {
-            "name": "org.locnet.letterofcredit",
+        "org.locnet.participants": {
+            "name": "org.locnet.participants",
             "contractInstance": {
-                "name": "org.locnet.letterofcredit",
-                "default": true
+                "name": "org.locnet.participants",
+                "default": false
             },
             "transactions": [
                 {
@@ -31,7 +31,20 @@
                     ],
                     "parameters": [],
                     "name": "registerParticipant"
-                },
+                }
+            ],
+            "info": {
+                "title": "Participants contract",
+                "version": "0.0.1"
+            }
+        },
+        "org.locnet.letterofcredit": {
+            "name": "org.locnet.letterofcredit",
+            "contractInstance": {
+                "name": "org.locnet.letterofcredit",
+                "default": true
+            },
+            "transactions": [
                 {
                     "returns": {
                         "$ref": "#/components/schemas/LetterOfCredit"

@@ -5,10 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 import { StateList } from "../ledger-api/statelist";
 import { Bank, BankEmployee, Customer } from "./participants";
 import { BankState, BankEmployeeState, CustomerState } from "./participantstate";
-import { LetterOfCreditContext } from "../utils/context";
+import { LOCNetContext } from "../utils/context";
 
 class ParticipantConverter {
-    public static async fromCustomerState(cs: CustomerState, ctx: LetterOfCreditContext): Promise<Customer> {
+    public static async fromCustomerState(cs: CustomerState, ctx: LOCNetContext): Promise<Customer> {
         const bank = await ctx.getParticipantList().getBank(cs.getBankId())
 
         return new Customer(cs.getId(), cs.getForename(), cs.getSurname(), bank, cs.getCompany());
@@ -18,7 +18,7 @@ class ParticipantConverter {
         return new CustomerState(c.getId(), c.getForename(), c.getSurname(), c.getBankId(), c.getCompany());
     }
 
-    public static async fromBankEmployeeState(bes: BankEmployeeState, ctx: LetterOfCreditContext): Promise<BankEmployee> {
+    public static async fromBankEmployeeState(bes: BankEmployeeState, ctx: LOCNetContext): Promise<BankEmployee> {
         const bank = await ctx.getParticipantList().getBank(bes.getBankId())
 
         return new BankEmployee(bes.getId(), bes.getForename(), bes.getSurname(), bank);
@@ -28,7 +28,7 @@ class ParticipantConverter {
         return new BankEmployeeState(be.getId(), be.getForename(), be.getSurname(), be.getBankId());
     }
 
-    public static async fromBankState(bs: BankState, ctx: LetterOfCreditContext): Promise<Bank> {
+    public static async fromBankState(bs: BankState, ctx: LOCNetContext): Promise<Bank> {
         return new Bank(bs.getId(), bs.getName());
     }
 
@@ -38,7 +38,7 @@ class ParticipantConverter {
 }
 
 export class ParticipantList extends StateList {
-    constructor (ctx: LetterOfCreditContext) {
+    constructor (ctx: LOCNetContext) {
         super(ctx, 'org.locnet.participantslist');
         this.use(BankState);
         this.use(BankEmployeeState);
@@ -62,7 +62,7 @@ export class ParticipantList extends StateList {
             throw new Error('Failed to get bank. ERROR: ' + err.message);
         }
 
-        return ParticipantConverter.fromBankState(rawBank, this.getCtx() as LetterOfCreditContext);
+        return ParticipantConverter.fromBankState(rawBank, this.getCtx() as LOCNetContext);
     }
 
     async addBankEmployee(bankEmployee: BankEmployee) {
@@ -82,7 +82,7 @@ export class ParticipantList extends StateList {
             throw new Error('Failed to get bank employee. ERROR: ' + err.message);
         }
 
-        return ParticipantConverter.fromBankEmployeeState(rawBankEmployee, this.getCtx() as LetterOfCreditContext);
+        return ParticipantConverter.fromBankEmployeeState(rawBankEmployee, this.getCtx() as LOCNetContext);
     }
 
     async addCustomer(customer: Customer) {
@@ -102,6 +102,6 @@ export class ParticipantList extends StateList {
             throw new Error('Failed to get customer. ERROR: ' + err.message);
         }
 
-        return ParticipantConverter.fromCustomerState(rawCustomer, this.getCtx() as LetterOfCreditContext);
+        return ParticipantConverter.fromCustomerState(rawCustomer, this.getCtx() as LOCNetContext);
     }
 }

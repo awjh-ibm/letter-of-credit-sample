@@ -6,12 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 import { Contract } from 'fabric-contract-api';
 
-import { LetterOfCredit } from './letter-defs/letter';
-import { LetterList } from './letter-defs/letterlist';
-import { BankEmployee, Customer, Person, Bank } from './participant-defs/participants';
-import { LetterOfCreditContext } from './utils/context';
-import { CUSTOMER, BANK_EMPLOYEE } from './utils/clientidentity';
-import { IApproval, IProductDetails, IRule, Status, IEvidence } from './letter-defs/letterstate';
+import { LetterOfCredit } from '../letter-defs/letter';
+import { LetterList } from '../letter-defs/letterlist';
+import { BankEmployee, Customer, Person } from '../participant-defs/participants';
+import { LOCNetContext } from '../utils/context';
+import { IApproval, IProductDetails, IRule, Status, IEvidence } from '../letter-defs/letterstate';
 
 export class LetterOfCreditContract extends Contract {
     constructor() {
@@ -19,28 +18,10 @@ export class LetterOfCreditContract extends Contract {
     }
 
     public createContext() {
-        return new LetterOfCreditContext();
+        return new LOCNetContext();
     }
 
-    public async registerBank(ctx: LetterOfCreditContext, bankName: string) {
-        const bank: Bank = await ctx.getClientIdentity().newBankFromCaller(bankName);
-
-        await ctx.getParticipantList().addBank(bank);
-    }
-
-    public async registerParticipant(ctx: LetterOfCreditContext) {
-        const ci = ctx.getClientIdentity();
-
-        if (ci.desiredCallerRole(CUSTOMER)) {
-            await ctx.getParticipantList().addCustomer(await ci.toCustomer(false))
-        } else if (ci.desiredCallerRole(BANK_EMPLOYEE)) {
-            await ctx.getParticipantList().addBankEmployee(await ci.toBankEmployee(false))
-        } else {
-            throw new Error('Failed to register participant. Invalid client identity with role ' + ci.getRole())
-        }
-    }
-
-    public async get(ctx: LetterOfCreditContext, letterId: string): Promise<LetterOfCredit> {
+    public async get(ctx: LOCNetContext, letterId: string): Promise<LetterOfCredit> {
         const person: Person = await ctx.getClientIdentity().toPerson();
 
         const letterList: LetterList = ctx.getLetterList();
@@ -54,7 +35,7 @@ export class LetterOfCreditContract extends Contract {
         return letter;
     }
 
-    public async getAll(ctx: LetterOfCreditContext): Promise<Array<LetterOfCredit>> {
+    public async getAll(ctx: LOCNetContext): Promise<Array<LetterOfCredit>> {
         const person: Person = await ctx.getClientIdentity().toPerson();
 
         const letterList: LetterList = ctx.getLetterList();
@@ -72,7 +53,7 @@ export class LetterOfCreditContract extends Contract {
         return lettersArr;
     }
 
-    public async apply(ctx: LetterOfCreditContext, letterId: string, beneficiaryId: string, rules: Array<IRule>, productDetails: IProductDetails) {
+    public async apply(ctx: LOCNetContext, letterId: string, beneficiaryId: string, rules: Array<IRule>, productDetails: IProductDetails) {
         const applicant: Customer = await ctx.getClientIdentity().toCustomer();
         const beneficiary: Customer = await ctx.getParticipantList().getCustomer(beneficiaryId);
 
@@ -88,7 +69,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().addLetter(letter);
     }
 
-    public async approve(ctx: LetterOfCreditContext, letterId: string) {
+    public async approve(ctx: LOCNetContext, letterId: string) {
         const person: Person = await ctx.getClientIdentity().toPerson();
 
         const letter: LetterOfCredit = await this.getEditableLetterIfCredit(ctx, letterId);
@@ -102,7 +83,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().updateLetter(letter);
     }
 
-    public async reject(ctx: LetterOfCreditContext, letterId: string) {
+    public async reject(ctx: LOCNetContext, letterId: string) {
         const person: Person = await ctx.getClientIdentity().toPerson();
 
         const letter: LetterOfCredit = await this.getEditableLetterIfCredit(ctx, letterId);
@@ -117,7 +98,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().updateLetter(letter);
     }
 
-    public async suggestRuleChange(ctx: LetterOfCreditContext, letterId: string, rules: Array<IRule>) {
+    public async suggestRuleChange(ctx: LOCNetContext, letterId: string, rules: Array<IRule>) {
         const person: Person = await ctx.getClientIdentity().toPerson();
 
         const letter: LetterOfCredit = await this.getEditableLetterIfCredit(ctx, letterId);
@@ -133,7 +114,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().updateLetter(letter);
     }
 
-    public async markAsShipped(ctx: LetterOfCreditContext, letterId: string, evidence: IEvidence) {
+    public async markAsShipped(ctx: LOCNetContext, letterId: string, evidence: IEvidence) {
         const caller: Customer = await ctx.getClientIdentity().toCustomer();
 
         const letter: LetterOfCredit = await ctx.getLetterList().getLetter(letterId);
@@ -152,7 +133,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().updateLetter(letter);
     }
 
-    public async markAsReceived(ctx: LetterOfCreditContext, letterId: string) {
+    public async markAsReceived(ctx: LOCNetContext, letterId: string) {
         const caller: Customer = await ctx.getClientIdentity().toCustomer();
 
         const letter: LetterOfCredit = await ctx.getLetterList().getLetter(letterId);
@@ -170,7 +151,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().updateLetter(letter);
     }
 
-    public async markAsReadyForPayment(ctx: LetterOfCreditContext, letterId: string) {
+    public async markAsReadyForPayment(ctx: LOCNetContext, letterId: string) {
         const caller: BankEmployee = await ctx.getClientIdentity().toBankEmployee();
 
         const letter: LetterOfCredit = await ctx.getLetterList().getLetter(letterId);
@@ -188,7 +169,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().updateLetter(letter);
     }
 
-    public async close(ctx: LetterOfCreditContext, letterId: string) {
+    public async close(ctx: LOCNetContext, letterId: string) {
         const caller: BankEmployee = await ctx.getClientIdentity().toBankEmployee();
 
         const letter: LetterOfCredit = await ctx.getLetterList().getLetter(letterId);
@@ -206,7 +187,7 @@ export class LetterOfCreditContract extends Contract {
         await ctx.getLetterList().updateLetter(letter);
     }
 
-    private async getEditableLetterIfCredit(ctx: LetterOfCreditContext, letterId: string): Promise<LetterOfCredit> {
+    private async getEditableLetterIfCredit(ctx: LOCNetContext, letterId: string): Promise<LetterOfCredit> {
         const letter = await ctx.getLetterList().getLetter(letterId);
 
         if (letter.getStatus() > Status.AwaitingApproval) {

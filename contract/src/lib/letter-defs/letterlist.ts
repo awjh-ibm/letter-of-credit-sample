@@ -5,10 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 import { StateList } from "../ledger-api/statelist";
 import { LetterOfCredit } from "./letter";
 import { LetterOfCreditState } from "./letterstate";
-import { LetterOfCreditContext } from "../utils/context";
+import { LOCNetContext } from "../utils/context";
 
 class LetterOfCreditConverter {
-    public static async fromLetterOfCreditState(locs: LetterOfCreditState, ctx: LetterOfCreditContext): Promise<LetterOfCredit> {
+    public static async fromLetterOfCreditState(locs: LetterOfCreditState, ctx: LOCNetContext): Promise<LetterOfCredit> {
         const applicant = await ctx.getParticipantList().getCustomer(locs.getApplicantId());
         const beneficiary = await ctx.getParticipantList().getCustomer(locs.getBeneficiaryId());
 
@@ -21,7 +21,7 @@ class LetterOfCreditConverter {
 }
 
 export class LetterList extends StateList {
-    constructor (ctx: LetterOfCreditContext) {
+    constructor (ctx: LOCNetContext) {
         super(ctx, 'org.locnet.letterofcreditlist');
         this.use(LetterOfCreditState);
     }
@@ -43,7 +43,7 @@ export class LetterList extends StateList {
             throw new Error('Failed to get letter state. ERROR: ' + err.message);
         }
 
-        return LetterOfCreditConverter.fromLetterOfCreditState(rawLetter, this.getCtx() as LetterOfCreditContext);
+        return LetterOfCreditConverter.fromLetterOfCreditState(rawLetter, this.getCtx() as LOCNetContext);
     }
 
     async getAllLetters(): Promise<Map<string, LetterOfCredit>> {
@@ -58,7 +58,7 @@ export class LetterList extends StateList {
         const lettersMap: Map<string, LetterOfCredit> = new Map();
 
         for (let [key, rawLetter] of rawLetters) {
-            lettersMap.set(key, await LetterOfCreditConverter.fromLetterOfCreditState(rawLetter, this.getCtx() as LetterOfCreditContext));
+            lettersMap.set(key, await LetterOfCreditConverter.fromLetterOfCreditState(rawLetter, this.getCtx() as LOCNetContext));
         }
 
         return lettersMap;

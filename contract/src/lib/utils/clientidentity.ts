@@ -2,7 +2,7 @@
 SPDX-License-Identifier: Apache-2.0
 */
 
-import { LetterOfCreditContext } from "./context";
+import { LOCNetContext } from "./context";
 import { ClientIdentity } from "fabric-shim";
 import { Person, Customer, BankEmployee, Bank } from "../participant-defs/participants";
 
@@ -14,10 +14,10 @@ export const SYSTEM = 'system';
 const ROLE_FIELD = 'locnet.role';
 const USERNAME_FIELD = 'locnet.username';
 
-export class LetterOfCreditClientIdentity extends ClientIdentity {
-    private ctx: LetterOfCreditContext
+export class LOCNetClientIdentity extends ClientIdentity {
+    private ctx: LOCNetContext
 
-    constructor(ctx: LetterOfCreditContext) {
+    constructor(ctx: LOCNetContext) {
         super(ctx.stub);
 
         this.ctx = ctx;
